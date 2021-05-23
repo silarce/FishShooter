@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>捕魚機下注明細</title>
+    <!-- jQuery -->
+    <script src="./frame/jQuery/jquery-3.4.1.js"></script>
+    <!-- React -->
+    <script crossorigin src="./frame/react/react.development.js"></script>
+    <script crossorigin src="./frame/react/react-dom.development.js"></script>
+    <script src="./frame/react/babel.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="./frame/bootstrap/bootstrap.min.css">
+    <script src="./frame/bootstrap/bootstrap.min.js"></script>
+    <script src="./frame/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <style>
+        .pageBtn {
+            margin: 10px;
+            background: transparent;
+            border: none;
+        }
+
+        .pageBtn:hover {
+            background-color: #ddd;
+        }
+
+        #currPageBtn {
+            font-weight: bolder;
+            font-size: 1.2rem;
+            color: dodgerblue;
+        }
+
+        .searchBar {
+            width: 170px;
+        }
+
+        .searchBtn {
+            border: none;
+            margin-left: 10px;
+        }
+
+        table {
+            width: fit-content !important;
+        }
+
+        .table-responsive {
+            overflow-x: scroll !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="root"></div>
+
+
+    <script type="text/babel">
+
+        class FishRecord extends React.Component {
+            constructor() {
+                super();
+
+
+
+                this.rows;
+                this.rowsCount;
+                this.currPage;
+                this.lastPage;
+
+
+
+
+                $.ajax({
+                    type: "get",
+                    url: "http://localhost:3001/fishShooter/betrecord/1",
+                    data: "",
+                    async: false,
+                    success: (res) => {
+
+                        this.rows = res.rows;
+                        this.rowsCount = res.total_nums;
+                        this.currPage = parseInt(res.curr_page);
+                        this.lastPage = res.last_page;
+
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+
+                this.state = {
+                    rows: this.rows,
+                    currPage: this.currPage,
+                    searchPage: "請輸入欲搜尋頁數",
+                    searchId: "請輸入欲搜尋注單編號"
+                }
+
+
+            } //constructor
+
+            changePage = (i) => {
+
+                if (i % 1 !== 0 || i <= 0 || i > this.lastPage) {
+                    this.setState({
+                        searchPage: "請輸入非零數字整數",
+                    })
+                    return
+                }
+
+                if (i > this.lastPage || i <= 0) { return }
+
+                $.ajax({
+                    type: "get",
+                    url: `http://localhost:3001/fishShooter/betrecord/${i}`,
+                    data: "",
+                    async: false,
+                    success: (res) => {
+                        this.rows = res.rows;
+                        this.rowsCount = res.total_nums;
+                        this.currPage = parseInt(res.curr_page);
+                        this.lastPage = res.last_page;
+
+                        this.setState({ rows: res.rows })
+                        this.setState({ currPage: parseInt(res.curr_page) })
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                })
+            } //changePage
+
+            changeInputValue = (e) => {
+
+                if (e.target.id == "toPageInput") {
+                    this.setState({
+                        searchPage: e.target.value
+                    })
+                }
+
+            }// changeValue
+
+            cleanValue = () => {
+                this.setState({
+                    searchPage: "",
+                })
+            } //cleanValue
+
+
+            render() {
+                this.tdArr = []
+                for (let i = 0; i < this.state.rows.length; i++) {
+
+                    // 下注時間
+                    // 將從資料庫取得的時間字串轉為Date物件
+                    // 這時系統會自動將時區轉為客戶端時區，從而且解決時區的問題
+                    var betTime = new Date(this.state.rows[i].betTime)
+                    // 宣告變數並賦值每個時間單位，以利後續做格式排版
+                    // padStart的作用是補前導零，但是只能作用於字串，所以要先用toString將時間數值轉為字串
+                    var betYear = betTime.getFullYear();
+                    var betMonth = (betTime.getMonth() + 1).toString().padStart(2, 0);
+                    var betDate = betTime.getDate().toString().padStart(2, 0);
+                    var betHour = betTime.getHours().toString().padStart(2, 0);
+                    var betMinute = betTime.getMinutes().toString().padStart(2, 0);
+                    var betSecond = betTime.getSeconds().toString().padStart(2, 0);
+                    // 整理好要輸出的格式就可以輸出了
+                    var betTimeStr = `${betYear}-${betMonth}-${betDate} ${betHour}:${betMinute}:${betSecond}`
+
+                    // 賭局結束時間
+                    var betOverTime = new Date(this.state.rows[i].betOverTime)
+                    var betOverYear = betOverTime.getFullYear();
+                    var betOverMonth = (betOverTime.getMonth() + 1).toString().padStart(2, 0);
+                    var betOverDate = betOverTime.getDate().toString().padStart(2, 0);
+                    var betOverHour = betOverTime.getHours().toString().padStart(2, 0);
+                    var betOverMinute = betOverTime.getMinutes().toString().padStart(2, 0);
+                    var betOverSecond = betOverTime.getSeconds().toString().padStart(2, 0);
+
+                    var betOverTimeStr = `${betOverYear}-${betOverMonth}-${betOverDate} ${betOverHour}:${betOverMinute}:${betOverSecond}`
+
+
+                    this.tdArr.push(
+                        <tr key={i}>
+                            <td nowrap="nowrap" id="memberId">{this.state.rows[i].id}</td>
+                            <td nowrap="nowrap" id="memberId">{this.state.rows[i].memberId}</td>
+                            <td nowrap="nowrap" id="memberName"> {this.state.rows[i].account} </td>
+                            <td nowrap="nowrap" id="betBeginTime"> {betTimeStr}</td>
+                            <td nowrap="nowrap" id="betType">{this.state.rows[i].gameType}</td>
+                            <td nowrap="nowrap" id="betType">{this.state.rows[i].object}</td>
+                            <td nowrap="nowrap" id="betMoney">{this.state.rows[i].bets} </td>
+                            <td nowrap="nowrap" id="memberWalletBefore">{this.state.rows[i].moneyBefore}</td>
+                            <td nowrap="nowrap" id="gameIncome">{this.state.rows[i].status}</td>
+                            <td nowrap="nowrap" id="betResult">{this.state.rows[i].result}</td>
+                            <td nowrap="nowrap" id="memberWallet">{this.state.rows[i].moneyAfter}</td>
+                            <td nowrap="nowrap" id="fishHited">{this.state.rows[i].fishHited}</td>
+                            <td nowrap="nowrap" id="fishKilled">{this.state.rows[i].fishKilled}</td>
+                            <td nowrap="nowrap" id="betOverTime">{betOverTimeStr}</td>
+                        </tr>
+                    )
+                }
+
+                this.pageArr = [] //這是換頁按鈕陣列
+                var j = 2;
+                var k = 2;
+                (this.state.currPage == 1) ? k = 4 : (this.state.currPage == 2) ? k = 3 : k = 2;
+                (this.state.currPage == this.lastPage) ? j = 4 : (this.state.currPage == this.lastPage - 1) ? j = 3 : j = 2;
+
+                for (let i = this.state.currPage - j; i <= this.state.currPage + k; i++) {
+
+                    if (i <= 0) continue;
+                    if (i > this.lastPage) break;
+
+                    if (i == this.state.currPage) {
+                        this.pageArr.push(
+                            <button id="currPageBtn" className="pageBtn" key={i} onClick={() => { this.changePage(i) }}>{i}</button>
+                        );
+                        continue;
+                    }
+
+                    this.pageArr.push(
+                        <button className="pageBtn" key={i} onClick={() => { this.changePage(i) }}>{i}</button>
+                    )
+                }
+
+                return (
+                    <React.Fragment>
+                        <div className="table-responsive">
+                            <table className="table table-striped">
+                                <thead id="tableHead">
+                                    <tr>
+                                        <th nowrap="nowrap">注單編號</th>
+                                        <th nowrap="nowrap">會員編號</th>
+                                        <th nowrap="nowrap">會員帳號</th>
+                                        <th nowrap="nowrap">遊戲時間</th>
+                                        <th nowrap="nowrap">遊戲名稱</th>
+                                        <th nowrap="nowrap">投注項目</th>
+                                        <th nowrap="nowrap">投注金額</th>
+                                        <th nowrap="nowrap">錢包餘額</th>
+                                        <th nowrap="nowrap">中獎資訊</th>
+                                        <th nowrap="nowrap">輸贏結果</th>
+                                        <th nowrap="nowrap">結算餘額</th>
+                                        <th nowrap="nowrap">命中的魚</th>
+                                        <th nowrap="nowrap">擊殺的魚</th>
+                                        <th nowrap="nowrap">賭局結束時間</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.tdArr}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <button className="pageBtn" onClick={() => { this.changePage(1) }}>1 &#10094;&#10094;</button>
+                        <button className="pageBtn" onClick={() => { this.changePage(this.state.currPage - 1) }}>&#10096;</button>
+                        {this.pageArr}
+                        <button className="pageBtn" onClick={() => { this.changePage(this.state.currPage + 1) }}>&#10097;</button>
+                        <button className="pageBtn" onClick={() => { this.changePage(this.lastPage) }}>&#10095;&#10095; {this.lastPage}</button>
+
+                        <br />
+
+                        <input id="toPageInput" className="searchBar" type="text" value={this.state.searchPage}
+                            onChange={this.changeInputValue}
+                            onClick={this.cleanValue} />
+                        <button id="searchPageBtn" className="searchBtn" onClick={() => { this.changePage(this.state.searchPage) }}>搜尋指定頁數</button>
+
+
+
+
+
+
+                    </React.Fragment>
+                );
+            }
+        } //render
+        ReactDOM.render(
+            <FishRecord />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+
+</html>

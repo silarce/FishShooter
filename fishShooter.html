@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>捕魚機</title>
+
+
+    <script src="./frame/jQuery/jquery-3.4.1.js"></script>
+    <script type="module" src="fishShooter.js"></script>
+    
+
+
+    <style>
+        @font-face {
+            font-family: NotoSansTC-Regular;
+            src: url(./fontFamily/Noto_Sans_TC/NotoSansTC-Regular.otf);
+        }
+
+        * {
+            font-family: NotoSansTC-Regular;
+        }
+
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            /* background-color: sandybrown; */
+            /* background: sandybrown url("./img/backgroundImg/sea01.jpg") no-repeat; */
+            background: url("./img/backgroundImg/sea01.jpg"), url("./img/backgroundImg/chisou_kazan.png");
+            /* background-size: 100% 83%; */
+            background-size: 100% 83%, 150% 50%;
+            background-repeat: no-repeat, no-repeat;
+            background-position-x: 0, 20%;
+            background-position-y: 0, 120%;
+            display: block;
+            margin: auto;
+            height: 100vh;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <audio id="cannonSound" src="./sound/bomb.mp3"></audio>
+
+
+</body>
+
+</html>
