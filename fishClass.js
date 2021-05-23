@@ -167,16 +167,16 @@ class Shells {
         memberMoneyBag = this.memberMoneyBagUpdate; // 更新顯示在客戶端會員錢包
 
         // 傳資料到伺服器資料庫
-        $.ajax({
-            type: "post",
-            url: "http://localhost:3001/fishshooter/uploadBetRecord",
-            data: betRecord,
+        // $.ajax({
+        //     type: "post",
+        //     url: "http://localhost:3001/fishshooter/uploadBetRecord",
+        //     data: betRecord,
 
-            success: function (res) {
-                console.log(res);
-            },
-            error: function () { }
-        })
+        //     success: function (res) {
+        //         console.log(res);
+        //     },
+        //     error: function () { }
+        // })
     }// betResult
 
 } // class shells

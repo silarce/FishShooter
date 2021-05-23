@@ -1,0 +1,6 @@
+這裡只有遊戲本體
+沒有伺服器相關的路由，因此下注紀錄無法查看
+
+要檢視可以查看下注紀錄，請查看
+https://github.com/silarce/TeamPorject_001_OneManOneGame
+
